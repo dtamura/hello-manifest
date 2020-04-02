@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tamuraApp.helloGin.fullname" . }}
+  labels:
+    {{- include "tamuraApp.helloGin.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.helloGin.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "tamuraApp.helloGin.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "tamuraApp.helloGin.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.helloGin.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      # serviceAccountName: {{ include "tamuraApp.helloGin.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.helloGin.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.helloGin.securityContext | nindent 12 }}
+          image: "{{ .Values.helloGin.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.helloGin.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          resources:
+            {{- toYaml .Values.helloGin.resources | nindent 12 }}
+      {{- with .Values.helloGin.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.helloGin.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.helloGin.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
