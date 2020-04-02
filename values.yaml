@@ -13,6 +13,7 @@ serviceAccount:
     name:
 
 helloGin:
+  name: hello-gin
   replicaCount: 1
 
   image:
