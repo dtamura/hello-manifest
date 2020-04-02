@@ -28,7 +28,7 @@ If release name contains chart name it will be used as a full name.
 Expand the name of the chart.
 */}}
 {{- define "tamuraApp.helloGin.name" -}}
-{{- default .Chart.Name .Values.helloGin.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- default .Values.helloGin.name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
