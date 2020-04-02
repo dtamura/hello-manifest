@@ -22,7 +22,7 @@ spec:
       securityContext:
         {{- toYaml .Values.helloGin.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Values.helloGin.name }}
           securityContext:
             {{- toYaml .Values.helloGin.securityContext | nindent 12 }}
           image: "{{ .Values.helloGin.image.repository }}:{{ .Chart.AppVersion }}"
