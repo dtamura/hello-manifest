@@ -27,6 +27,9 @@ spec:
             {{- toYaml .Values.helloGin.securityContext | nindent 12 }}
           image: "{{ .Values.helloGin.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.helloGin.image.pullPolicy }}
+          env:
+            - name: JAEGER_AGENT_HOST
+              value: {{ .Values.jaegerAgentHost }}
           ports:
             - name: http
               containerPort: 8080
