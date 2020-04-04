@@ -149,7 +149,7 @@ mongodb:
   replicaCount: 1
 
   image:
-    repository: mongodb
+    repository: mongo
     tag: 4.2.5
     pullPolicy: IfNotPresent
 
