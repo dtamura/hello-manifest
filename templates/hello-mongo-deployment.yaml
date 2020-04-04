@@ -31,9 +31,9 @@ spec:
             - name: JAEGER_AGENT_HOST
               value: {{ .Values.jaegerAgentHost }}
             - name: MONGO_URL
-              value: {{ Values.helloMongo.mongodb.url }}
+              value: {{ .Values.helloMongo.mongodb.url }}
             - name: MONGO_DATABASE
-              value: {{ Values.helloMongo.mongodb.database }}
+              value: {{ .Values.helloMongo.mongodb.database }}
           ports:
             - name: http
               containerPort: 8080

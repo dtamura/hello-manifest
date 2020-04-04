@@ -124,3 +124,62 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "tamuraApp.helloMongo.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "tamuraApp.helloMongo.fullname" -}}
+{{- if .Values.helloMongo.fullnameOverride -}}
+{{- .Values.helloMongo.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.helloMongo.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- printf "%s-%s" .Release.Name .Values.helloMongo.name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s-%s" .Release.Name $name .Values.helloMongo.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "tamuraApp.helloMongo.name" -}}
+{{- default .Values.helloMongo.name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "tamuraApp.helloMongo.labels" -}}
+helm.sh/chart: {{ include "tamuraApp.helloMongo.chart" . }}
+{{ include "tamuraApp.helloMongo.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "tamuraApp.helloMongo.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "tamuraApp.helloMongo.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "tamuraApp.helloMongo.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "tamuraApp.helloMongo.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}

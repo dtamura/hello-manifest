@@ -89,6 +89,10 @@ helloMongo:
     tag: v0.0.1
     pullPolicy: IfNotPresent
 
+  mongodb:
+    url: mongodb.mongo.svc.cluster.local
+    database: hoge
+
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
