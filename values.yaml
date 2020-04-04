@@ -82,11 +82,11 @@ helloGin:
 
 helloMongo:
   name: hello-mongo
-  replicaCount: 2
+  replicaCount: 3
 
   image:
     repository: dtamura/hello-mongo
-    tag: v0.0.1
+    tag: v0.0.2
     pullPolicy: IfNotPresent
 
   mongodb:
