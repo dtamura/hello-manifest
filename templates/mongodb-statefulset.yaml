@@ -5,6 +5,7 @@ metadata:
   labels:
     {{- include "tamuraApp.mongodb.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "tamuraApp.mongodb.fullname" . }}
   replicas: {{ .Values.mongodb.replicaCount }}
   selector:
     matchLabels:
