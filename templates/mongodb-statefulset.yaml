@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "tamuraApp.mongodb.fullname" . }}
+  labels:
+    {{- include "tamuraApp.mongodb.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.mongodb.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "tamuraApp.mongodb.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "tamuraApp.mongodb.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.mongodb.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      # serviceAccountName: {{ include "tamuraApp.mongodb.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.mongodb.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Values.mongodb.name }}
+          securityContext:
+            {{- toYaml .Values.mongodb.securityContext | nindent 12 }}
+          image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+          imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
+          env:
+            - name: JAEGER_AGENT_HOST
+              value: {{ .Values.jaegerAgentHost }}
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: {{ .Values.mongodb.initdb.username }}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: {{ .Values.mongodb.initdb.password }}
+          ports:
+            - name: mongodb
+              containerPort: 27017
+              protocol: TCP
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #     - ls
+          #     - /app/app
+          # readinessProbe:
+          #   httpGet:
+          #     path: /healthz
+          #     port: http
+          resources:
+            {{- toYaml .Values.mongodb.resources | nindent 12 }}
+{{- if .Values.mongodb.persistentVolume.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: storage-volume
+        {{- if .Values.mongodb.persistentVolume.annotations }}
+        annotations:
+{{ toYaml .Values.mongodb.persistentVolume.annotations | indent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+{{ toYaml .Values.mongodb.persistentVolume.accessModes | indent 10 }}
+        resources:
+          requests:
+            storage: "{{ .Values.mongodb.persistentVolume.size }}"
+      {{- if .Values.mongodb.persistentVolume.storageClass }}
+      {{- if (eq "-" .Values.mongodb.persistentVolume.storageClass) }}
+        storageClassName: ""
+      {{- else }}
+        storageClassName: "{{ .Values.mongodb.persistentVolume.storageClass }}"
+      {{- end }}
+      {{- end }}
+{{- else }}
+        - name: storage-volume
+          emptyDir: {}
+{{- end }}
+      {{- with .Values.mongodb.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.mongodb.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.mongodb.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

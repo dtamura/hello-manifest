@@ -183,3 +183,62 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "tamuraApp.mongodb.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "tamuraApp.mongodb.fullname" -}}
+{{- if .Values.mongodb.fullnameOverride -}}
+{{- .Values.mongodb.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.mongodb.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- printf "%s-%s" .Release.Name .Values.mongodb.name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s-%s" .Release.Name $name .Values.mongodb.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "tamuraApp.mongodb.name" -}}
+{{- default .Values.mongodb.name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "tamuraApp.mongodb.labels" -}}
+helm.sh/chart: {{ include "tamuraApp.mongodb.chart" . }}
+{{ include "tamuraApp.mongodb.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "tamuraApp.mongodb.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "tamuraApp.mongodb.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "tamuraApp.mongodb.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "tamuraApp.mongodb.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}

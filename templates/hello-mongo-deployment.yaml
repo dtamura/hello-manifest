@@ -31,7 +31,7 @@ spec:
             - name: JAEGER_AGENT_HOST
               value: {{ .Values.jaegerAgentHost }}
             - name: MONGO_URL
-              value: {{ .Values.helloMongo.mongodb.url }}
+              value: mongodb://{{ .Values.mongodb.initdb.username }}:{{ .Values.mongodb.initdb.password }}@{{ .Values.mongodb.name }}:{{ .Values.mongodb.service.port }}
             - name: MONGO_DATABASE
               value: {{ .Values.helloMongo.mongodb.database }}
           ports:
