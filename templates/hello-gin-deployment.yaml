@@ -25,7 +25,7 @@ spec:
         - name: {{ .Values.helloGin.name }}
           securityContext:
             {{- toYaml .Values.helloGin.securityContext | nindent 12 }}
-          image: "{{ .Values.helloGin.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.helloGin.image.repository }}:{{ .Values.helloGin.image.tag }}"
           imagePullPolicy: {{ .Values.helloGin.image.pullPolicy }}
           env:
             - name: JAEGER_AGENT_HOST

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tamuraApp.helloMongo.fullname" . }}
+  labels:
+    {{- include "tamuraApp.helloMongo.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.helloMongo.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "tamuraApp.helloMongo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "tamuraApp.helloMongo.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.helloMongo.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      # serviceAccountName: {{ include "tamuraApp.helloMongo.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.helloMongo.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Values.helloMongo.name }}
+          securityContext:
+            {{- toYaml .Values.helloMongo.securityContext | nindent 12 }}
+          image: "{{ .Values.helloMongo.image.repository }}:{{ .Values.helloMongo.image.tag }}"
+          imagePullPolicy: {{ .Values.helloMongo.image.pullPolicy }}
+          env:
+            - name: JAEGER_AGENT_HOST
+              value: {{ .Values.jaegerAgentHost }}
+            - name: MONGO_URL
+              value: {{ Values.helloMongo.mongodb.url }}
+            - name: MONGO_DATABASE
+              value: {{ Values.helloMongo.mongodb.database }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+              - ls
+              - /app/app
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          resources:
+            {{- toYaml .Values.helloMongo.resources | nindent 12 }}
+      {{- with .Values.helloMongo.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.helloMongo.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.helloMongo.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
