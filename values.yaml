@@ -86,7 +86,7 @@ helloMongo:
 
   image:
     repository: dtamura/hello-mongo
-    tag: v0.0.3
+    tag: v0.0.4
     pullPolicy: IfNotPresent
 
   mongodb:
