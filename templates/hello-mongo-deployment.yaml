@@ -35,7 +35,7 @@ spec:
             - name: MONGO_DATABASE
               value: {{ .Values.helloMongo.mongodb.database }}
             - name: PING_URL
-              value: http://{{ include "tamuraApp.mongodb.fullname" . }}:{{ .Values.helloGin.service.port }}
+              value: http://{{ include "tamuraApp.helloGin.fullname" . }}:{{ .Values.helloGin.service.port }}
           ports:
             - name: http
               containerPort: 8080
