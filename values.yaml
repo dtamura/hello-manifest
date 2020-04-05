@@ -27,7 +27,7 @@ helloGin:
 
   image:
     repository: dtamura/hello-gin
-    tag: v3
+    tag: v0.0.2
     pullPolicy: IfNotPresent
 
   imagePullSecrets: []
